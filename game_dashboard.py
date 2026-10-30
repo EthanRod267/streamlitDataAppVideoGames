@@ -8,17 +8,20 @@ st.subheader("Ethan Rodriguez")
 
 st.divider()
 
+# Load the video game sales data and set up the top N slider
 df = pd.read_csv("videogamesales.csv")
 top_n = st.slider("Number of publishers to show", 3, 20, 10)
 filtered = df.copy()
 tables, plots, insights = st.tabs(["Data","Charts","Insights"])
 
+# Calculate sales by publisher and developer, and filter to top publishers
 sales = (filtered.groupby(["Publisher", "Developer"])["Sales_Millions"].sum()
          .reset_index())
 top_pubs = (sales.groupby("Publisher")["Sales_Millions"].sum()
             .nlargest(top_n).index)
 sales = sales[sales["Publisher"].isin(top_pubs)]
 
+# Calculate sales by publisher and developer, and filter to top publishers
 fig = px.bar(
     sales,
     x="Publisher",
@@ -42,6 +45,7 @@ pie_fig = px.pie(
     labels={"names": "Platform", "values": "Sales (Millions of Units)"},
 )
 
+# Display the charts and tables in their respective tabs
 with plots:
     st.plotly_chart(fig, use_container_width=True)
     st.plotly_chart(pie_fig, use_container_width=True)
@@ -66,6 +70,8 @@ with tables:
     with dev_col:
         st.caption("Developers Ranked by Sales")
         st.dataframe(rank_by_sales("Developer"))
+
+# Display the charts and tables in their respective tabs
 with insights:
     st.subheader("What the data tells us")
     st.markdown("""
